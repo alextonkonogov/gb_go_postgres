@@ -1,0 +1,43 @@
+Код присылать как zip-архив с файлами, необходимыми для запуска генератора нагрузки (даже если это один файл).
+1) Реализовать генератор нагрузки, который нагружает базу типовыми запросами, подготовленными в рамках практического задания Урока 3.
+2) Используя генератор нагрузки, измерить производительность (QPS) с разными значениями для параметров MaxConns, MinConns pool'а соединений.
+3) Подготовить отчет с информацией об используемом железе (используемый процессор, количество ядер, объём оперативной памяти, объём жесткого диска)
+и о пропускной способности сервера PostgreSQL для выбранного запроса. Представить отчет в файле throughput.txt.
+
+
+ОТЧЕТ:
+
+О железе:
+    MacBook Pro (13-inch, M1, 2020)
+    - используемый процессор: Apple M1
+    - количество ядер: 8 ядер (4 высокопроизводительных «Firestorm» и 4 низкого энергопотребления «Icestorm»)
+    - объём оперативной памяти: 8гб
+    - объём жесткого диска: SSD 256гб
+
+Результат выполнения генератора нагрузки:
+При MaxConns, MinConns в значении 1, видим всего 8774 запросов.
+
+    a.tonkonogov@admins-MacBook-Pro gb_go_postgres % go run cmd/attacker/attacker.go --max-conns=1 --min-conns=1 --author=Кинг
+    start attack
+    duration: 11.275646625s
+    threads: 1000
+    queries: 8774
+    QPS: 797
+
+ При MaxConns 8, MinConns 1, видим увеличение количества запросов почти в 5 раз (46038).
+
+    a.tonkonogov@admins-MacBook-Pro gb_go_postgres % go run cmd/attacker/attacker.go --max-conns=8 --min-conns=4 --author=Кинг
+    start attack
+    duration: 10.170417833s
+    threads: 1000
+    queries: 46038
+    QPS: 4603
+
+ При MaxConns 16, MinConns 8, видим увеличение количества запросов уже не так сильно заметно почти и составляет 66939 запросов.
+
+    a.tonkonogov@admins-MacBook-Pro gb_go_postgres % go run cmd/attacker/attacker.go --max-conns=16 --min-conns=8 --author=Кинг
+    start attack
+    duration: 10.111740333s
+    threads: 1000
+    queries: 66939
+    QPS: 6693
