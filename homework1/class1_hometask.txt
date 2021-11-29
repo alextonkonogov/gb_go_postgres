@@ -1,0 +1,77 @@
+
+1. Развернуть сервер PostgreSQL в Docker.
+
+Развернул Postgres локально, так как на маке была ошибка "zsh: comand not found: psql". Писал про это в чате GB_Postgres для Go-разработчиков (https://t.me/c/1523464844/775)
+
+
+2. Создать пользователя и базу данных.
+
+create database gb_postgres_golang;
+create user alextonkonogov88 PASSWORD '1234';
+grant all privileges on database gb_postgres_golang to alextonkonogov88;
+
+
+3. В базе из пункта 2 создать таблицу: не менее трёх столбцов различных типов. SQL-запрос на создание таблицы добавить в текстовый файл class1_hometask.txt.
+
+create table users (
+	id bigint generated always as identity,
+	name varchar(200) not null,
+	surname varchar(200) not null,
+	active boolean default true,
+	primary key (id)
+);
+
+
+4. В таблицу из пункта 3 вставить не менее трёх строк. SQL-запрос на вставку добавить в текстовый файл class1_hometask.txt.
+
+insert into users (name, surname) values ('Alex','Tonkonogov'),('John','Doe'),('Jane','Doe');
+
+
+5. Используя мета-команды psql, вывести список всех сущностей в базе данных из пункта 2. Полученный список сущностей добавить в текстовый файл class1_hometask.txt.
+
+gb_postgres_golang=> \l
+                                            List of databases
+        Name        |    Owner     | Encoding |   Collate   |    Ctype    |       Access privileges
+--------------------+--------------+----------+-------------+-------------+-------------------------------
+ a.tonkonogov       | a.tonkonogov | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ gb_postgres_golang | postgres     | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres                 +
+                    |              |          |             |             | postgres=CTc/postgres        +
+                    |              |          |             |             | alextonkonogov88=CTc/postgres
+ postgres           | postgres     | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ template0          | postgres     | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres                  +
+                    |              |          |             |             | postgres=CTc/postgres
+ template1          | postgres     | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres                  +
+                    |              |          |             |             | postgres=CTc/postgres
+(5 rows)
+
+
+gb_postgres_golang=> \du
+                                       List of roles
+    Role name     |                         Attributes                         | Member of
+------------------+------------------------------------------------------------+-----------
+ a.tonkonogov     | Superuser, Create role, Create DB                          | {}
+ alextonkonogov88 |                                                            | {}
+ postgres         | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+
+
+gb_postgres_golang=> \d
+                    List of relations
+ Schema |       Name        |   Type   |      Owner
+--------+-------------------+----------+------------------
+ public | authors           | table    | alextonkonogov88
+ public | authors_id_seq    | sequence | alextonkonogov88
+ public | books             | table    | alextonkonogov88
+ public | books_id_seq      | sequence | alextonkonogov88
+ public | users             | table    | alextonkonogov88
+ public | users_books_rates | table    | alextonkonogov88
+ public | users_id_seq      | sequence | alextonkonogov88
+(7 rows)
+
+
+6. Придумать проект, над которым вы будете работать в последующих уроках. Примером может быть любой сайт/приложение, которым вы пользуетесь (YouTube, Medium, AirBnB, Booking, Twitter, Instagram, Facebook, LinkedIn). Это может быть соц. сеть, блог, книга рецептов, база данных авиаперелетов, мессенджер, система бронирования бань и саун и т.п.
+7. Кратко (не более 10 предложений) описать суть проекта и основной use-case в файле schema.sql (описывать как sql комментарий в начале файла).
+8. Разработать структуру базы данных, которая будет фундаментом для выбранного проекта (не менее трёх таблиц, не более 10 таблиц). В структуре базы данных желательно иметь логические связи между сущностями (не менее одной связи). Команды на создание таблиц описать в файле schema.sql.
+
+
+Описание по 6,7 и 8 пунктам см. в файле "schema.sql"
+

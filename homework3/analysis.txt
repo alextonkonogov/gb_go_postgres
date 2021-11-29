@@ -1,0 +1,88 @@
+Создал два индекса: 
+
+
+1) Для поиска пользователей (users) по фамилии (полное соответствие):
+
+До создания индекса
+
+	gb_postgres_golang=> explain analyze select surname from users where surname = 'Tonkonogov';
+	                                           QUERY PLAN
+	------------------------------------------------------------------------------------------------
+	 Seq Scan on users  (cost=0.00..21.16 rows=1 width=2) (actual time=0.027..0.159 rows=1 loops=1)
+	   Filter: ((surname)::text = 'Tonkonogov'::text)
+	   Rows Removed by Filter: 1132
+	 Planning Time: 5.555 ms
+	 Execution Time: 0.220 ms
+	(5 rows)
+
+Seq Scan говорит нам, что поиск производится перебором всех данных, его ремя выполнения - 0.220 ms. Теперь создаем индекс.
+
+	gb_postgres_golang=> create index concurrently users_surname_idx on users(surname);
+	CREATE INDEX
+
+Проверяем после создания индекса:
+
+	gb_postgres_golang=> explain analyze select surname from users where surname = 'Tonkonogov';
+	                                                          QUERY PLAN
+	------------------------------------------------------------------------------------------------------------------------------
+	 Index Only Scan using users_surname_idx on users  (cost=0.15..4.17 rows=1 width=2) (actual time=0.040..0.043 rows=1 loops=1)
+	   Index Cond: (surname = 'Tonkonogov'::text)
+	   Heap Fetches: 0
+	 Planning Time: 0.194 ms
+	 Execution Time: 0.077 ms
+	(5 rows)
+
+Index Only Scan подтверждает, что поиск производился по индексу со временем выполнения 0.077 ms, что почти в три раза быстрее, чем при Seq Scan.
+
+Индекс занимает всего 16 kB:
+
+	gb_postgres_golang=> \di+ users_surname_idx;
+	                                                 List of relations
+	 Schema |       Name        | Type  |      Owner       | Table | Persistence | Access method | Size  | Description
+	--------+-------------------+-------+------------------+-------+-------------+---------------+-------+-------------
+	 public | users_surname_idx | index | alextonkonogov88 | users | permanent   | btree         | 16 kB |
+	(1 row)
+
+
+2) Индекс для поиска книг по названию (по вхождению)
+
+До создания индекса
+
+	gb_postgres_golang=> explain analyze select * from books where title like '%Гвенди%';
+	                                           QUERY PLAN
+	------------------------------------------------------------------------------------------------
+	 Seq Scan on books  (cost=0.00..1.66 rows=1 width=37) (actual time=0.068..0.069 rows=0 loops=1)
+	   Filter: ((title)::text ~~ '%Гвенди:'::text)
+	   Rows Removed by Filter: 1865
+	 Planning Time: 11.462 ms
+	 Execution Time: 4.681 ms
+	(5 rows)
+
+Seq Scan говорит нам, что поиск производится перебором всех данных, его ремя выполнения - 4.681 ms
+Теперь создаем индекс для поиска по вхождению строки.
+
+	create index concurrently books_title_idx on books using btree (title text_pattern_ops);
+
+Проверяем после создания индекса:
+
+	gb_postgres_golang=> explain analyze select * from books where title like '%Гвенди%';
+	                                           QUERY PLAN
+	-------------------------------------------------------------------------------------------------
+	 Index Only Scan using books_title_idx on on books  (cost=0.00..36.11 rows=1 width=20) (actual time=0.082..0.557 rows=2 loops=1)
+	   Filter: ((title)::text ~~ '%Гвенди%'::text)
+	   Rows Removed by Filter: 1865
+	 Planning Time: 0.62 ms
+	 Execution Time: 0.76 ms
+	(5 rows)
+
+Index Only Scan подтверждает, что поиск производился по индексу со временем выполнения 0.76 ms, что значительно быстрее.
+
+Индекс занимает 40 kB
+
+	gb_postgres_golang=> \di+ books_title_idx;
+	                                                List of relations
+	 Schema |      Name       | Type  |      Owner       | Table | Persistence | Access method | Size  | Description
+	--------+-----------------+-------+------------------+-------+-------------+---------------+-------+-------------
+	 public | books_title_idx | index | alextonkonogov88 | books | permanent   | btree         | 40 kB |
+	(1 row)
+ 
