@@ -1,4 +1,4 @@
-package db
+package storage
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	"github.com/alextonkonogov/gb_go_postgres/homework4/pkg/config"
+	"github.com/alextonkonogov/gb_go_postgres/homework5/pkg/config"
 )
 
 func InitDBConn(ctx context.Context, appConfig *config.AppConfig) (dbpool *pgxpool.Pool, err error) {

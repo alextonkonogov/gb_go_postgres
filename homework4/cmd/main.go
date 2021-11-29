@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/alextonkonogov/gb_go_postgres/pkg/config"
-	"github.com/alextonkonogov/gb_go_postgres/pkg/database"
-	"github.com/alextonkonogov/gb_go_postgres/pkg/models"
+	"github.com/alextonkonogov/gb_go_postgres/homework4/pkg/config"
+	"github.com/alextonkonogov/gb_go_postgres/homework4/pkg/database"
+	"github.com/alextonkonogov/gb_go_postgres/homework4/pkg/models"
 )
 
 func main() {
