@@ -10,9 +10,9 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	"github.com/alextonkonogov/gb_go_postgres/pkg/config"
-	db "github.com/alextonkonogov/gb_go_postgres/pkg/database"
-	"github.com/alextonkonogov/gb_go_postgres/pkg/models"
+	"github.com/alextonkonogov/gb_go_postgres/homework4/pkg/config"
+	db "github.com/alextonkonogov/gb_go_postgres/homework4/pkg/database"
+	"github.com/alextonkonogov/gb_go_postgres/homework4/pkg/models"
 )
 
 type AttackResults struct {
